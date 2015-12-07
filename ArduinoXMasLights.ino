@@ -1,7 +1,12 @@
 #include <Adafruit_NeoPixel.h>
-#define PIN 10 //output pin for the LED strand
-#define RESET 6 //used to reset audio IC
-#define STROBE 4 //used to select audio IC frequency
+
+#define LED_DAT 10 //output pin for the LED strand
+#define LED_NUM 200 //number of LEDs in the strand
+
+#define SPECTRUM_RESET 6 //digital output
+#define SPECTRUM_STROBE 4 //digital output
+#define SPECTRUM_RIGHT 1 //analog input
+#define SPECTRUM_LEFT 0 //analog input
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -10,18 +15,40 @@
 //   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
 //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(200, PIN, NEO_RGB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NUM, LED_DAT, NEO_RGB + NEO_KHZ800);
 
-// IMPORTANT: To reduce NeoPixel burnout risk, add 1000 uF capacitor across
-// pixel power leads, add 300 - 500 Ohm resistor on first pixel's data input
-// and minimize distance between Arduino and first pixel.  Avoid connecting
-// on a live circuit...if you must, connect GND first.
+int spectrum_right[7]; //spectrum analysis values
+int spectrum_left[7]; //spectrum analysis values
 
+//the setup() function is automatically run everytime the arduino is powered on
 void setup() {
+
+  //Initialize all LEDs to 'off'
   strip.begin();
-  strip.show(); // Initialize all pixels to 'off'
+  strip.show(); 
+
+  //Initialize pins for Spectrum Analyzer
+  pinMode(SPECTRUM_RESET, OUTPUT);
+  pinMode(SPECTRUM_STROBE, OUTPUT);
+  digitalWrite(SPECTRUM_STROBE, HIGH);
+  digitalWrite(SPECTRUM_RESET, HIGH);
+
+  //Initialize spectrum analyzer
+  digitalWrite(SPECTRUM_STROBE,LOW);
+    delay(1);
+  digitalWrite(SPECTRUM_RESET,HIGH);
+    delay(1);
+  digitalWrite(SPECTRUM_STROBE,HIGH);
+    delay(1);
+  digitalWrite(SPECTRUM_STROBE,LOW);
+    delay(1);
+  digitalWrite(SPECTRUM_RESET,LOW);
+    delay(5);
+  
 }
 
+
+//the loop() function runs continuously following the setup() funciton
 void loop() {
   // Some example procedures showing how to display to the pixels:
   colorWipe(strip.Color(255, 0, 0), 50); // Red
@@ -120,4 +147,17 @@ uint32_t Wheel(byte WheelPos) {
   }
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+void readSpectrum()
+{
+  // Band 0 = Lowest Frequencies.
+  byte Band;
+  for(Band=0;Band <7; Band++)
+  {
+    spectrum_right[Band] = (analogRead(SPECTRUM_LEFT) + analogRead(SPECTRUM_LEFT) ) >>1; //Read twice and take the average by dividing by 2
+    spectrum_left[Band] = (analogRead(SPECTRUM_RIGHT) + analogRead(SPECTRUM_RIGHT) ) >>1; //Read twice and take the average by dividing by 2
+    digitalWrite(SPECTRUM_STROBE,HIGH);
+    digitalWrite(SPECTRUM_STROBE,LOW);     
+  }
 }
