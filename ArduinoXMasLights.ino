@@ -1,8 +1,7 @@
 #include <Adafruit_NeoPixel.h>
-#define PIN 6
-
-//test kwitt
-//greg
+#define PIN 10 //output pin for the LED strand
+#define RESET 6 //used to reset audio IC
+#define STROBE 4 //used to select audio IC frequency
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
