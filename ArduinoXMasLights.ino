@@ -2,6 +2,7 @@
 #define PIN 6
 
 //test kwitt
+//greg
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
