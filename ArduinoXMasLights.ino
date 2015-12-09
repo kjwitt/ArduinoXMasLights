@@ -44,6 +44,9 @@ void setup() {
     delay(1);
   digitalWrite(SPECTRUM_RESET,LOW);
     delay(5);
+
+  //set up serial comms (for computer debug)
+  Serial.begin(9600);
   
 }
 
