@@ -12,8 +12,8 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NUM, LED_DAT, NEO_RGB + NEO_KHZ8
 Sparkfun_Spectrum_Shield spectrum = Sparkfun_Spectrum_Shield();
 
 uint8_t led_buffer[200][3];
-long runningsum[7] = {0, 0, 0, 0, 0, 0, 0};
-int thresh[7] = {800, 800, 800, 800, 800, 800, 800};
+unsigned long long runningsum[7];
+int thresh[7];
 int inc = 0;
 
 void setup() {
@@ -28,6 +28,14 @@ void setup() {
   pinMode(CALIB_LED, OUTPUT);
 
   ClearBuffer();
+
+  for (int i = 0; i < 7; i++)
+  {
+    thresh[i] = 150;
+    runningsum[i] = 0;
+  }
+
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -45,49 +53,75 @@ void loop() {
     digitalWrite(CALIB_LED, LOW);
   }
 
+  //Serial.println(spectrum.average[2]);
+
   for (int i = 0; i < 7; i++)
   {
-    runningsum[i] += sq(spectrum.average[i]);
+    runningsum[i] += sq((unsigned long)spectrum.average[i]);
   }
+
+  //Serial.println(runningsum[2]);
 
   if (inc == RMS_SAMPLES)
   {
+    Serial.println("THRESHOLDS");
     for (int i = 0; i < 7; i++)
     {
-      thresh[i] = sqrt(runningsum[i] / RMS_SAMPLES);
+      thresh[i] = sqrt((unsigned long)(runningsum[i] / RMS_SAMPLES));
+      Serial.println(thresh[i]);
       runningsum[i] = 0;
     }
+    Serial.println();
     inc = 0;
   }
 
   for (int i = 0; i < 7; i++)
   {
-    if (spectrum.average[i] > thresh[i])
+    if (spectrum.average[i] > thresh[i] + 60)
     {
       BandEvent(i, spectrum.average[i] - thresh[i]);
     }
   }
 
+  WriteBuffer();
   inc++;
 }
 
 void BandEvent(int band, int ot)
 {
+
+  if (ot > 255)
+  {
+    ot = 255;
+  }
   switch (band)
   {
     case (0):
+      for (int i = 0; i < 200; i++)
+      {
+        led_buffer[i][0] = ot;
+      }
       return;
     case (1):
+      led_buffer[random(0, 48)][1] = ot;
       return;
     case (2):
+      led_buffer[random(48, 94)][1] = ot;
       return;
     case (3):
+      led_buffer[random(94, 134)][1] = ot;
       return;
     case (4):
+      led_buffer[random(134, 169)][1] = ot;
       return;
     case (5):
+      led_buffer[random(169, 199)][1] = ot;
       return;
     case (6):
+      for (int i = 169; i < 200; i++)
+      {
+        led_buffer[i][2] = ot;
+      }
       return;
   }
 }
@@ -98,10 +132,10 @@ void FadeRGB()
   {
     int temp;
 
-    temp = led_buffer[i][0] == 0 ? 0 : led_buffer[i][0] - 7;
+    temp = led_buffer[i][0] == 0 ? 0 : led_buffer[i][0] - 3;
     led_buffer[i][0] = temp < 0 ? 0 : temp;
 
-    temp = led_buffer[i][1] == 0 ? 0 : led_buffer[i][1] - 2;
+    temp = led_buffer[i][1] == 0 ? 0 : led_buffer[i][1] - 5;
     led_buffer[i][1] = temp < 0 ? 0 : temp;
 
     temp = led_buffer[i][2] == 0 ? 0 : led_buffer[i][2] - 5;

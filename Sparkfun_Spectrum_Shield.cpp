@@ -25,7 +25,7 @@ void Sparkfun_Spectrum_Shield::Init()
 	digitalWrite(strobe_pin_, HIGH);
 	digitalWrite(reset_pin_, HIGH);
 
-  	//Initialize spectrum analyzer
+  //Initialize spectrum analyzer
 	digitalWrite(strobe_pin_, LOW);
 	delay(1);
 	digitalWrite(reset_pin_, HIGH);
