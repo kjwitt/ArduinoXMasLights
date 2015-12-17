@@ -132,14 +132,11 @@ void FadeRGB()
   {
     int temp;
 
-    temp = led_buffer[i][0] == 0 ? 0 : led_buffer[i][0] - 3;
-    led_buffer[i][0] = temp < 0 ? 0 : temp;
+    temp = led_buffer[i][0] - 3 <= 0 ? 0 : led_buffer[i][0] - 3;
 
-    temp = led_buffer[i][1] == 0 ? 0 : led_buffer[i][1] - 5;
-    led_buffer[i][1] = temp < 0 ? 0 : temp;
+    temp = led_buffer[i][1] - 5 <= 0 ? 0 : led_buffer[i][1] - 5;
 
-    temp = led_buffer[i][2] == 0 ? 0 : led_buffer[i][2] - 5;
-    led_buffer[i][2] = temp < 0 ? 0 : temp;
+    temp = led_buffer[i][2] - 5 <= 0 ? 0 : led_buffer[i][2] - 5;
   }
 }
 
