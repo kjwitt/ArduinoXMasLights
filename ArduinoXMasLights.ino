@@ -103,24 +103,24 @@ void BandEvent(int band, int ot)
       }
       return;
     case (1):
-      led_buffer[random(0, 48)][1] = ot;
+      led_buffer[random(0, 40)][2] = ot;
       return;
     case (2):
-      led_buffer[random(48, 94)][1] = ot;
+      led_buffer[random(40, 80)][2] = ot;
       return;
     case (3):
-      led_buffer[random(94, 134)][1] = ot;
+      led_buffer[random(80, 120)][2] = ot;
       return;
     case (4):
-      led_buffer[random(134, 169)][1] = ot;
+      led_buffer[random(120, 160)][2] = ot;
       return;
     case (5):
-      led_buffer[random(169, 199)][1] = ot;
+      led_buffer[random(160, 200)][2] = ot;
       return;
     case (6):
-      for (int i = 169; i < 200; i++)
+      for (int i = 160; i < 200; i++)
       {
-        led_buffer[i][2] = ot;
+        led_buffer[i][1] = ot;
       }
       return;
   }
